@@ -1,15 +1,68 @@
+turtles-own [
+  secrets
+]
 
+to setup
+  clear-all
+  reset-ticks
+
+  create-turtles number-of-agents [
+    setxy random-xcor random-ycor
+    set shape "person"
+    set color white
+    set secrets (list who)
+    set label-color red
+    set size 1.5
+  ]
+  ask patches [
+    set pcolor grey
+  ]
+
+
+end
+
+to go
+  ask turtles [
+    fd 1
+    lt random 90
+    rt random 90
+  ]
+  ask turtles [
+    ask patches in-radius 3 [
+      set pcolor red
+    ]
+  ]
+  tick
+end
+
+to choose-strategy
+      if agent-strategy = "Any" [
+        ;;any-strategy
+      ]
+      if agent-strategy = "Learn New Secrets" [
+        ;;learn-new-secrets-strategy
+      ]
+      if agent-strategy = "Token" [
+        ;;token-strategy
+      ]
+      if agent-strategy = "Spider" [
+        ;;spider-strategy
+      ]
+      if agent-strategy = "Call once" [
+        ;;call-once-strategy
+      ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-647
-448
+218
+18
+873
+674
 -1
 -1
-13.0
+19.61
 1
-10
+15
 1
 1
 1
@@ -35,7 +88,7 @@ CHOOSER
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-2
+3
 
 BUTTON
 25
@@ -80,7 +133,7 @@ number-of-agents
 number-of-agents
 0
 100
-50.0
+1.0
 1
 1
 NIL
