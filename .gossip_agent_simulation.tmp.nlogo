@@ -42,7 +42,7 @@ to tick-turtle
           fd 1
           lt random 90
           rt random 90
-          create-conv
+
       ]
 end
 
