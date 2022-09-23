@@ -36,7 +36,9 @@ end
 to tick-turtle
   ifelse in-conv? = true
       [
-        ;;exchange-secrets
+        let id who
+        let ag-2 one-of group with [ who != id ]
+        exchange-secrets ag-2
       ]
       [
           fd 1
@@ -50,9 +52,22 @@ to create-conv
   if in-conv? = false [
     find-partner
     if form-group = true [
-      ;;exchange-secrets
+      let id who
+      let ag-2 one-of group with [ who != id ]
+      exchange-secrets ag-2
     ]
   ]
+end
+
+;; calling agent exchanges secrets with ag-2
+to exchange-secrets [ag-2]
+  let ag-1 self
+  let secrets-union -1
+  ask ag-1 [ set secrets-union secrets ]
+  ask ag-2 [ set secrets-union sentence secrets-union secrets ]
+  set secrets-union remove-duplicates secrets-union
+  ask ag-1 [ set secrets secrets-union ]
+  ask ag-2 [ set secrets secrets-union ]
 end
 
 to find-partner
