@@ -43,11 +43,55 @@ to tick-turtle
     ]
   ]
   [
+    move
+    create-conv
+  ]
+end
+
+;; Let agent turn and move based on strategy
+to move
+
+  if agent-strategy = "Any" [
     fd 1
     lt random 90
     rt random 90
-    create-conv
   ]
+
+  if agent-strategy = "Learn New Secrets" [
+    let ag-1 self
+    let candidates turtles with [in-conv? = false]; in-radius view-distance
+    set candidates candidates with [ new-secret ag-1 ]
+    let target one-of candidates with-min [ distance ag-1 ]
+    ifelse target != NOBODY [
+      face target
+    ]
+    [
+      lt random 90
+      rt random 90
+    ]
+    fd 1
+  ]
+
+  if agent-strategy = "Token" [
+    ;;token-strategy
+  ]
+  if agent-strategy = "Spider" [
+    ;;spider-strategy
+  ]
+
+  if agent-strategy = "Call once" [
+    ;;call-once-strategy
+  ]
+
+end
+
+;; true if calling agent (ag-2) has a secret that is new to ag-1
+to-report new-secret [ ag-1 ]
+  let ag-2 self
+  let ag-1-secrets -1
+  ask ag-1 [ set ag-1-secrets secrets ]
+  foreach secrets [s -> if (not member? s ag-1-secrets) [ report true ] ]
+  report false
 end
 
 to create-conv
@@ -63,20 +107,17 @@ to create-conv
   ]
 end
 
-;; calling agent exchanges secrets with ag-2
-to exchange-secrets [ag-2]
-  let ag-1 self
-  let secrets-union -1
-  ask ag-1 [ set secrets-union secrets ]
-  ask ag-2 [ set secrets-union sentence secrets-union secrets ]
-  set secrets-union remove-duplicates secrets-union
-  ask ag-1 [ set secrets secrets-union ]
-  ask ag-2 [ set secrets secrets-union ]
-end
-
+;; try to find a gossiping partner withing view-distance based on strategy
 to find-partner
   set group turtles with [in-conv? = false] in-radius view-distance
   let group-size count group
+
+  ;; handle strategies
+  if agent-strategy = "Learn New Secrets" [
+    let ag-1 self
+    set group group with [ new-secret ag-1 ]
+  ]
+
   set group up-to-n-of 2 group
 end
 
@@ -94,6 +135,17 @@ to-report form-group
     report true
   ]
   report false
+end
+
+;; calling agent exchanges secrets with ag-2
+to exchange-secrets [ag-2]
+  let ag-1 self
+  let secrets-union -1
+  ask ag-1 [ set secrets-union secrets ]
+  ask ag-2 [ set secrets-union sentence secrets-union secrets ]
+  set secrets-union remove-duplicates secrets-union
+  ask ag-1 [ set secrets secrets-union ]
+  ask ag-2 [ set secrets secrets-union ]
 end
 
 to choose-strategy
@@ -153,7 +205,7 @@ CHOOSER
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-3
+0
 
 BUTTON
 25
