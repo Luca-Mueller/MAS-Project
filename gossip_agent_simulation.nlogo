@@ -4,6 +4,7 @@ turtles-own [
   conv-timer
   group
   group-leader
+  energy
 ]
 
 to setup
@@ -17,6 +18,7 @@ to setup
     set secrets (list who)
     set in-conv? false
     set conv-timer 0
+    set energy starting-energy
   ]
   ask patches [
     set pcolor grey - 2
@@ -27,6 +29,7 @@ to setup
 end
 
 to go
+  if (count turtles with [ length secrets = count turtles ]) = count turtles [stop]
   ask turtles [
     tick-turtle
   ]
@@ -34,7 +37,9 @@ to go
 end
 
 to tick-turtle
+  if turtles-die and (energy = 0) [die]
   ifelse in-conv? = true [
+    set energy starting-energy
     set conv-timer (conv-timer - 1)
     if conv-timer <= 0 [
       set in-conv? false
@@ -46,6 +51,7 @@ to tick-turtle
     move
     create-conv
   ]
+  set energy (energy - 1)
 end
 
 ;; Let agent turn and move based on strategy
@@ -167,7 +173,7 @@ to choose-strategy
 end
 
 to-report perc-experts
-  report (count turtles with [ length secrets = number-of-agents ]) / number-of-agents
+  report (count turtles with [ length secrets >= count turtles ]) / count turtles
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -288,12 +294,60 @@ HORIZONTAL
 
 MONITOR
 24
-277
+273
 96
-322
+318
 % experts
 perc-experts
 5
+1
+11
+
+SLIDER
+25
+433
+197
+466
+starting-energy
+starting-energy
+0
+100
+93.0
+1
+1
+NIL
+HORIZONTAL
+
+SWITCH
+26
+392
+138
+425
+turtles-die
+turtles-die
+0
+1
+-1000
+
+MONITOR
+24
+325
+107
+370
+NIL
+count turtles
+17
+1
+11
+
+MONITOR
+62
+606
+190
+651
+NIL
+[energy] of turtle 0
+17
 1
 11
 
