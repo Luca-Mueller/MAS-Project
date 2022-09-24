@@ -248,15 +248,15 @@ perc-experts
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+Simulation of gossip protocols with local interaction.
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+Each agent starts with its own secret. Through gossiping interactions with other agents it can learn new secrets. The goal is for every agent to become an expert by learning all secrets.
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Choose a protocol, adjust the other parameters, set up the environment and press 'go'.
 
 ## THINGS TO NOTICE
 
@@ -264,7 +264,10 @@ perc-experts
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+1) Protocols
+2) Number of agents
+3) View distance
+4) Gossip duration
 
 ## EXTENDING THE MODEL
 
