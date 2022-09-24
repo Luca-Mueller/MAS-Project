@@ -1,6 +1,7 @@
 turtles-own [
   secrets
   in-conv?
+  conv-timer
   group
   group-leader
 ]
@@ -15,6 +16,7 @@ to setup
     set color white
     set secrets (list who)
     set in-conv? false
+    set conv-timer 0
   ]
   ask patches [
     set pcolor grey - 2
@@ -22,8 +24,6 @@ to setup
   ask turtles [
    create-conv
   ]
-
-
 end
 
 to go
@@ -34,18 +34,20 @@ to go
 end
 
 to tick-turtle
-  ifelse in-conv? = true
-      [
-        let id who
-        let ag-2 one-of group with [ who != id ]
-        exchange-secrets ag-2
-      ]
-      [
-          fd 1
-          lt random 90
-          rt random 90
-          create-conv
-      ]
+  ifelse in-conv? = true [
+    set conv-timer (conv-timer - 1)
+    if conv-timer <= 0 [
+      set in-conv? false
+      set shape "person"
+      set color white
+    ]
+  ]
+  [
+    fd 1
+    lt random 90
+    rt random 90
+    create-conv
+  ]
 end
 
 to create-conv
@@ -55,6 +57,8 @@ to create-conv
       let id who
       let ag-2 one-of group with [ who != id ]
       exchange-secrets ag-2
+      ask self [ set conv-timer gossip-duration ]
+      ask ag-2 [ set conv-timer gossip-duration ]
     ]
   ]
 end
@@ -108,6 +112,10 @@ to choose-strategy
       if agent-strategy = "Call once" [
         ;;call-once-strategy
       ]
+end
+
+to-report perc-experts
+  report (count turtles with [ length secrets = number-of-agents ]) / number-of-agents
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -210,6 +218,32 @@ view-distance
 1
 NIL
 HORIZONTAL
+
+SLIDER
+25
+234
+197
+267
+gossip-duration
+gossip-duration
+1
+10
+5.0
+1
+1
+ticks
+HORIZONTAL
+
+MONITOR
+24
+277
+96
+322
+% experts
+perc-experts
+5
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
