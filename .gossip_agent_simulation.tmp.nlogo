@@ -8,6 +8,7 @@ turtles-own [
 
 globals [
   numb_conv
+  conv-history
 ]
 
 to setup
@@ -32,6 +33,7 @@ end
 
 to go
   if (count turtles with [ length secrets = count turtles ]) = count turtles [
+
     stop
   ]
   ask turtles [
@@ -154,6 +156,7 @@ to exchange-secrets [ag-2]
   set secrets-union remove-duplicates secrets-union
   ask ag-1 [ set secrets secrets-union ]
   ask ag-2 [ set secrets secrets-union ]
+  set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
 end
 
 to choose-strategy
