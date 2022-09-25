@@ -33,7 +33,7 @@ end
 
 to go
   if (count turtles with [ length secrets = count turtles ]) = count turtles [
-
+    print conv-history
     stop
   ]
   ask turtles [
@@ -371,7 +371,17 @@ Choose a protocol, adjust the other parameters, set up the environment and press
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+1) Gossip distance, create in independent variable from the view distance
+2) Spider
+3) Token
+4) Call once
+5) Implement the ending connecting graph
+6) Make each turtle have its own history of conv
+7) Think of appropiate graphs to show the results
+8) Think of experiments and varibles that need to be manipulated for the results
+9) Make the expert agents another color
+10) Polish things
+1
 
 ## NETLOGO FEATURES
 
