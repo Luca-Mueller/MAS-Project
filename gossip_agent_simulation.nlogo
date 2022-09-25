@@ -6,6 +6,10 @@ turtles-own [
   group-leader
 ]
 
+globals [
+  numb_conv
+]
+
 to setup
   clear-all
   reset-ticks
@@ -106,6 +110,7 @@ to create-conv
       exchange-secrets ag-2
       ask self [ set conv-timer gossip-duration ]
       ask ag-2 [ set conv-timer gossip-duration ]
+      set numb_conv numb_conv + 1
     ]
   ]
 end
@@ -292,13 +297,50 @@ HORIZONTAL
 MONITOR
 24
 277
-96
+141
 322
-% experts
-perc-experts
+Number of experts
+perc-experts * 100
 5
 1
 11
+
+PLOT
+1002
+202
+1202
+352
+Secrets
+ticks
+lenght of secrets
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -14730904 true "" "plot min [length secrets] of turtles "
+"pen-1" 1.0 0 -5298144 true "" "plot max [length secrets] of turtles "
+
+PLOT
+1001
+41
+1201
+191
+Conversations
+ticks
+number of conversations
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot numb_conv"
 
 @#$#@#$#@
 ## WHAT IS IT?
