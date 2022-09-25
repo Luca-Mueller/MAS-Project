@@ -27,9 +27,7 @@ to setup
 end
 
 to go
-  if (count turtles with [ length secrets = count turtles ]) = count turtles [
-    stop
-  ]
+  if
   ask turtles [
     tick-turtle
   ]
@@ -208,7 +206,7 @@ CHOOSER
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-1
+0
 
 BUTTON
 25
