@@ -4,11 +4,12 @@ turtles-own [
   conv-timer
   group
   group-leader
+  conv-history
 ]
 
 globals [
   numb_conv
-  conv-history
+  total_conv
 ]
 
 to setup
@@ -22,6 +23,7 @@ to setup
     set secrets (list who)
     set in-conv? false
     set conv-timer 0
+    set conv-history -1
   ]
   ask patches [
     set pcolor grey - 2
@@ -33,7 +35,10 @@ end
 
 to go
   if (count turtles with [ length secrets = count turtles ]) = count turtles [
-    print conv-history
+    ask turtles [
+      show sort-by [ -> conv-history]
+      export-output "Conv-history.txt"
+    ]
     stop
   ]
   ask turtles [
@@ -156,7 +161,12 @@ to exchange-secrets [ag-2]
   set secrets-union remove-duplicates secrets-union
   ask ag-1 [ set secrets secrets-union ]
   ask ag-2 [ set secrets secrets-union ]
-  set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
+  ask ag-1[
+    set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
+  ]
+    ask ag-2[
+    set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
+  ]
 end
 
 to choose-strategy
@@ -216,7 +226,7 @@ CHOOSER
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-1
+0
 
 BUTTON
 25
@@ -261,7 +271,7 @@ number-of-agents
 number-of-agents
 2
 100
-50.0
+10.0
 2
 1
 NIL
@@ -381,7 +391,9 @@ Choose a protocol, adjust the other parameters, set up the environment and press
 8) Think of experiments and varibles that need to be manipulated for the results
 9) Make the expert agents another color
 10) Polish things
-1
+
+Implement later if time is on our side
+1) Adding different mutiple maps
 
 ## NETLOGO FEATURES
 
