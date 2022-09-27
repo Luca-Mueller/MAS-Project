@@ -1,3 +1,6 @@
+directed-link-breed [initiated-conversations initiated-conversation]
+
+
 turtles-own [
   secrets
   in-conv?
@@ -5,6 +8,8 @@ turtles-own [
   group
   group-leader
   conv-history
+  tot-conv-hist
+  ind
 ]
 
 globals [
@@ -24,7 +29,10 @@ to setup
     set in-conv? false
     set conv-timer 0
     set conv-history -1
+    set tot-conv-hist -1
+    set ind 0
   ]
+
   ask patches [
     set pcolor grey - 2
   ]
@@ -35,9 +43,21 @@ end
 
 to go
   if (count turtles with [ length secrets = count turtles ]) = count turtles [
+    if number-of-agents < 17 [
+      layout-circle sort turtles number-of-agents
+    ]
     ask turtles [
       show conv-history
       export-output "Conv-history.txt"
+
+      foreach tot-conv-hist [
+        if ind mod 2 != 0 [
+          ask turtle item ind tot-conv-hist[
+            create-initiated-conversation-to turtle item (ind + 1) tot-conv-hist
+          ]
+        ]
+        set ind ind + 1
+      ]
     ]
     stop
   ]
@@ -167,6 +187,7 @@ to exchange-secrets [ag-2]
     ask ag-2[
     set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
   ]
+  set tot-conv-hist (sentence tot-conv-hist ([who] of ag-1) ([who] of ag-2))
 end
 
 to choose-strategy
@@ -205,8 +226,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -16
 16
