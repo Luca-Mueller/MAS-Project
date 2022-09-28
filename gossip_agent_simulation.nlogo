@@ -14,7 +14,6 @@ turtles-own [
 
 globals [
   numb_conv
-  total_conv
 ]
 
 to setup
@@ -165,7 +164,7 @@ to-report form-group
       set group-leader leader
       set group playing-group
       set color red
-      set shape "face happy"
+      set shape "face neutral"
     ]
     report true
   ]
@@ -292,7 +291,7 @@ number-of-agents
 number-of-agents
 2
 100
-10.0
+26.0
 2
 1
 NIL
