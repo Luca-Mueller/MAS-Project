@@ -107,7 +107,7 @@ to move
 
   if agent-strategy = "Learn New Secrets" [
     let ag-1 self
-    let candidates turtles with [in-conv? = false]; in-radius view-distance
+    let candidates turtles with [in-conv? = false] in-radius view-distance
     set candidates candidates with [ new-secret ag-1 ]
     let target one-of candidates with-min [ distance ag-1 ]
     ifelse target != NOBODY [
@@ -156,9 +156,9 @@ to create-conv
   ]
 end
 
-;; try to find a gossiping partner withing view-distance based on strategy
+;; try to find a gossiping partner within gossip-distance based on strategy
 to find-partner
-  set group turtles with [in-conv? = false] in-radius view-distance
+  set group turtles with [in-conv? = false] in-radius gossip-distance
   let group-size count group
 
   ;; handle strategies
@@ -240,12 +240,12 @@ ticks
 CHOOSER
 24
 94
-176
+196
 139
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-0
+1
 
 BUTTON
 25
@@ -265,10 +265,10 @@ NIL
 1
 
 BUTTON
-110
-44
-173
-77
+132
+43
+195
+76
 NIL
 go
 T
@@ -283,14 +283,14 @@ NIL
 
 SLIDER
 24
-151
+149
 196
-184
+182
 number-of-agents
 number-of-agents
 2
 100
-48.0
+50.0
 2
 1
 NIL
@@ -298,24 +298,24 @@ HORIZONTAL
 
 SLIDER
 25
-192
+190
 197
-225
+223
 view-distance
 view-distance
 1
 25
-1.0
+10.0
 1
 1
-NIL
+patches
 HORIZONTAL
 
 SLIDER
 25
-234
+273
 197
-267
+306
 gossip-duration
 gossip-duration
 1
@@ -327,11 +327,11 @@ ticks
 HORIZONTAL
 
 MONITOR
-24
-277
-141
-322
-Number of experts
+25
+315
+198
+360
+Number of experts (in %)
 perc-experts * 100
 5
 1
@@ -374,6 +374,21 @@ false
 PENS
 "default" 1.0 0 -16777216 true "" "plot numb_conv"
 
+SLIDER
+25
+231
+197
+264
+gossip-distance
+gossip-distance
+1
+10
+2.0
+1
+1
+patches
+HORIZONTAL
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -400,7 +415,7 @@ Choose a protocol, adjust the other parameters, set up the environment and press
 
 ## EXTENDING THE MODEL
 
-1) Gossip distance, create in independent variable from the view distance
+1) #done (Gossip distance, create in independent variable from the view distance)
 2) Spider
 3) Token
 4) Call once
