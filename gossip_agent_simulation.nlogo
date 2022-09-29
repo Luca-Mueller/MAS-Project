@@ -1,6 +1,5 @@
 directed-link-breed [initiated-conversations initiated-conversation]
 
-
 turtles-own [
   secrets
   in-conv?
@@ -40,11 +39,33 @@ to setup
   ]
 end
 
+
 to go
   if (count turtles with [ length secrets = count turtles ]) = count turtles [
-    if number-of-agents < 17 [
-      layout-circle sort turtles number-of-agents
+    distinguish-expert
+    create-links
+    stop
+  ]
+  ask turtles [
+    tick-turtle
+  ]
+  tick
+end
+
+;;change the color of the turtles that become experts
+to distinguish-expert
+    ask turtles [
+     if length secrets = number-of-agents [
+        set color green
+      ]
     ]
+end
+
+;; create the links between the turtles that exchanged secrets
+to create-links
+    ;;if number-of-agents < 17 [
+      ;;layout-circle sort turtles number-of-agents
+    ;;]
     ask turtles [
       show conv-history
       export-output "Conv-history.txt"
@@ -58,12 +79,6 @@ to go
         set ind ind + 1
       ]
     ]
-    stop
-  ]
-  ask turtles [
-    tick-turtle
-  ]
-  tick
 end
 
 to tick-turtle
@@ -155,6 +170,7 @@ to find-partner
   set group up-to-n-of 2 group
 end
 
+;; let agents form groups and if in group return false, if seaeching for a group return true
 to-report form-group
   if count group > 1 [
     let leader self
@@ -189,23 +205,6 @@ to exchange-secrets [ag-2]
   set tot-conv-hist (sentence tot-conv-hist ([who] of ag-1) ([who] of ag-2))
 end
 
-to choose-strategy
-      if agent-strategy = "Any" [
-        ;;any-strategy
-      ]
-      if agent-strategy = "Learn New Secrets" [
-        ;;learn-new-secrets-strategy
-      ]
-      if agent-strategy = "Token" [
-        ;;token-strategy
-      ]
-      if agent-strategy = "Spider" [
-        ;;spider-strategy
-      ]
-      if agent-strategy = "Call once" [
-        ;;call-once-strategy
-      ]
-end
 
 to-report perc-experts
   report (count turtles with [ length secrets = number-of-agents ]) / number-of-agents
@@ -291,7 +290,7 @@ number-of-agents
 number-of-agents
 2
 100
-26.0
+48.0
 2
 1
 NIL
