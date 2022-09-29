@@ -404,12 +404,9 @@ Choose a protocol, adjust the other parameters, set up the environment and press
 2) Spider
 3) Token
 4) Call once
-5) Implement the ending connecting graph
-6) Make each turtle have its own history of conv
-7) Think of appropiate graphs to show the results
-8) Think of experiments and varibles that need to be manipulated for the results
-9) Make the expert agents another color
-10) Polish things
+5) Think of appropiate graphs to show the results
+6) Think of experiments and varibles that need to be manipulated for the results
+7) Polish things (repetitive)
 
 Implement later if time is on our side
 1) Adding different mutiple maps
