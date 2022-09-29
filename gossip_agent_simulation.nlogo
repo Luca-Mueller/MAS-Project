@@ -9,6 +9,7 @@ turtles-own [
   conv-history
   tot-conv-hist
   ind
+  token?
 ]
 
 globals [
@@ -29,6 +30,7 @@ to setup
     set conv-history -1
     set tot-conv-hist -1
     set ind 0
+    set token? true
   ]
 
   ask patches [
@@ -99,7 +101,7 @@ end
 ;; Let agent turn and move based on strategy
 to move
 
-  if agent-strategy = "Any" [
+  if agent-strategy = "Any" or agent-strategy = "Token" or agent-strategy = "Spider" [
     fd 1
     lt random 90
     rt random 90
@@ -118,13 +120,6 @@ to move
       rt random 90
     ]
     fd 1
-  ]
-
-  if agent-strategy = "Token" [
-    ;;token-strategy
-  ]
-  if agent-strategy = "Spider" [
-    ;;spider-strategy
   ]
 
   if agent-strategy = "Call once" [
@@ -167,6 +162,13 @@ to find-partner
     set group group with [ new-secret ag-1 ]
   ]
 
+  if agent-strategy = "Token" or agent-strategy = "Spider" [
+    if not [token?] of self [
+      let ag-1 self
+      set group turtles with [ who = [who] of ag-1 ]
+    ]
+  ]
+
   set group up-to-n-of 2 group
 end
 
@@ -190,6 +192,16 @@ end
 ;; calling agent exchanges secrets with ag-2
 to exchange-secrets [ag-2]
   let ag-1 self
+
+  if agent-strategy = "Token" [
+    ask ag-1 [ set token? false ]
+    ask ag-2 [ set token? true ]
+  ]
+
+  if agent-strategy = "Spider" [
+    ask ag-2 [ set token? false ]
+  ]
+
   let secrets-union -1
   ask ag-1 [ set secrets-union secrets ]
   ask ag-2 [ set secrets-union sentence secrets-union secrets ]
@@ -245,7 +257,7 @@ CHOOSER
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-1
+2
 
 BUTTON
 25
