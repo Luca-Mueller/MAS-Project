@@ -105,7 +105,7 @@ to move
 
   if agent-strategy = "Any" or agent-strategy = "Token" or agent-strategy = "Spider" [
     let ag-1 self
-    let candidates turtles with [(in-conv? = false)] in-radius view-distance
+    let candidates turtles with [(in-conv? = false) and )] in-radius view-distance
     let target one-of candidates
     ifelse target != NOBODY [
       face target
