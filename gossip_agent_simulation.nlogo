@@ -1,6 +1,7 @@
 directed-link-breed [initiated-conversations initiated-conversation]
 
 turtles-own [
+  interactions
   secrets
   in-conv?
   conv-timer
@@ -24,6 +25,7 @@ to setup
     setxy random-xcor random-ycor
     set shape "person"
     set color white
+    set interactions (list who)
     set secrets (list who)
     set in-conv? false
     set conv-timer 0
@@ -65,9 +67,9 @@ end
 
 ;; create the links between the turtles that exchanged secrets
 to create-links
-    ;;if number-of-agents < 17 [
-      ;;layout-circle sort turtles number-of-agents
-    ;;]
+    if number-of-agents < 17 [
+      layout-circle sort turtles number-of-agents
+    ]
     ask turtles [
       show conv-history
       export-output "Conv-history.txt"
@@ -102,9 +104,17 @@ end
 to move
 
   if agent-strategy = "Any" or agent-strategy = "Token" or agent-strategy = "Spider" [
+    let ag-1 self
+    let candidates turtles with [(in-conv? = false) and (last interactions != who)] in-radius view-distance
+    let target one-of candidates
+    ifelse target != NOBODY [
+      face target
+    ]
+    [
+      lt random 90
+      rt random 90
+    ]
     fd 1
-    lt random 90
-    rt random 90
   ]
 
   if agent-strategy = "Learn New Secrets" [
@@ -124,6 +134,17 @@ to move
 
   if agent-strategy = "Call once" [
     ;;call-once-strategy
+    let ag-1 self
+    let candidates turtles with [(in-conv? = false) and (not member? who interactions)] in-radius view-distance
+    let target one-of candidates with-min [ distance ag-1 ]
+    ifelse target != NOBODY [
+      face target
+    ]
+    [
+      lt random 90
+      rt random 90
+    ]
+    fd 1
   ]
 
 end
@@ -209,9 +230,13 @@ to exchange-secrets [ag-2]
   ask ag-1 [ set secrets secrets-union ]
   ask ag-2 [ set secrets secrets-union ]
   ask ag-1[
+    set interactions lput ([who] of ag-2)  interactions
+    set interactions remove-duplicates interactions
     set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
   ]
     ask ag-2[
+    set interactions lput ([who] of ag-1)  interactions
+    set interactions remove-duplicates interactions
     set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
   ]
   set tot-conv-hist (sentence tot-conv-hist ([who] of ag-1) ([who] of ag-2))
@@ -257,7 +282,7 @@ CHOOSER
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-2
+0
 
 BUTTON
 25
@@ -302,7 +327,7 @@ number-of-agents
 number-of-agents
 2
 100
-50.0
+16.0
 2
 1
 NIL
@@ -317,7 +342,7 @@ view-distance
 view-distance
 1
 25
-10.0
+6.0
 1
 1
 patches
@@ -395,7 +420,7 @@ gossip-distance
 gossip-distance
 1
 10
-2.0
+1.0
 1
 1
 patches
