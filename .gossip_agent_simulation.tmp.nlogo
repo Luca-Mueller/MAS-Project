@@ -104,9 +104,17 @@ end
 to move
 
   if agent-strategy = "Any" or agent-strategy = "Token" or agent-strategy = "Spider" [
+    let ag-1 self
+    let candidates turtles with [(in-conv? = false) and (last interactions != who)] in-radius view-distance
+    let target one-of candidates
+    ifelse target != NOBODY [
+      face target
+    ]
+    [
+      lt random 90
+      rt random 90
+    ]
     fd 1
-    lt random 90
-    rt random 90
   ]
 
   if agent-strategy = "Learn New Secrets" [
@@ -116,7 +124,6 @@ to move
     let target one-of candidates with-min [ distance ag-1 ]
     ifelse target != NOBODY [
       face target
-      set interactions lput (target wh interactions
     ]
     [
       lt random 90
@@ -127,6 +134,17 @@ to move
 
   if agent-strategy = "Call once" [
     ;;call-once-strategy
+    let ag-1 self
+    let candidates turtles with [(in-conv? = false) and (not member? who interactions)] in-radius view-distance
+    let target one-of candidates with-min [ distance ag-1 ]
+    ifelse target != NOBODY [
+      face target
+    ]
+    [
+      lt random 90
+      rt random 90
+    ]
+    fd 1
   ]
 
 end
@@ -212,9 +230,13 @@ to exchange-secrets [ag-2]
   ask ag-1 [ set secrets secrets-union ]
   ask ag-2 [ set secrets secrets-union ]
   ask ag-1[
+    set interactions lput ([who] of ag-2)  interactions
+    set interactions remove-duplicates interactions
     set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
   ]
     ask ag-2[
+    set interactions lput ([who] of ag-1)  interactions
+    set interactions remove-duplicates interactions
     set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
   ]
   set tot-conv-hist (sentence tot-conv-hist ([who] of ag-1) ([who] of ag-2))
@@ -260,7 +282,7 @@ CHOOSER
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-2
+0
 
 BUTTON
 25
@@ -320,7 +342,7 @@ view-distance
 view-distance
 1
 25
-10.0
+25.0
 1
 1
 patches
