@@ -105,7 +105,7 @@ to move
 
   if agent-strategy = "Any" or agent-strategy = "Token" or agent-strategy = "Spider" [
     let ag-1 self
-    let candidates turtles with [(in-conv? = false) and )] in-radius view-distance
+    let candidates turtles with [(in-conv? = false)] in-radius view-distance
     let target one-of candidates
     ifelse target != NOBODY [
       face target
@@ -261,8 +261,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-0
-0
+1
+1
 1
 -16
 16
@@ -281,8 +281,8 @@ CHOOSER
 139
 agent-strategy
 agent-strategy
-"Any" "Learn New Secrets" "Spider" "Token" "Call once"
-0
+"Any" "Learn New Secrets" "Spider" "Token" "Call once" "LNS+CO"
+3
 
 BUTTON
 25
@@ -327,7 +327,7 @@ number-of-agents
 number-of-agents
 2
 100
-16.0
+48.0
 2
 1
 NIL
@@ -342,7 +342,7 @@ view-distance
 view-distance
 1
 25
-6.0
+3.0
 1
 1
 patches
@@ -420,7 +420,7 @@ gossip-distance
 gossip-distance
 1
 10
-1.0
+2.0
 1
 1
 patches
