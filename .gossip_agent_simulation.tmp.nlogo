@@ -67,7 +67,7 @@ end
 
 ;; create the links between the turtles that exchanged secrets
 to create-links
-    ;;if number-of-agents < 17 [
+    ;if number-of-agents < 17 [
       ;;layout-circle sort turtles number-of-agents
     ;;]
     ask turtles [
@@ -327,7 +327,7 @@ number-of-agents
 number-of-agents
 2
 100
-50.0
+16.0
 2
 1
 NIL
@@ -342,7 +342,7 @@ view-distance
 view-distance
 1
 25
-25.0
+6.0
 1
 1
 patches
@@ -420,7 +420,7 @@ gossip-distance
 gossip-distance
 1
 10
-2.0
+1.0
 1
 1
 patches

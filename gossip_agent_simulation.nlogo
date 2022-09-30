@@ -67,9 +67,9 @@ end
 
 ;; create the links between the turtles that exchanged secrets
 to create-links
-    ;;if number-of-agents < 17 [
-      ;;layout-circle sort turtles number-of-agents
-    ;;]
+    if number-of-agents < 17 [
+      layout-circle sort turtles number-of-agents
+    ]
     ask turtles [
       show conv-history
       export-output "Conv-history.txt"
@@ -105,8 +105,8 @@ to move
 
   if agent-strategy = "Any" or agent-strategy = "Token" or agent-strategy = "Spider" [
     let ag-1 self
-    let candidates turtles with [(in-conv? = false) and (last interactions != who) and (item (length interactions -1) interactions != who)] in-radius view-distance
-    let target one-of candidates with-min [ distance ag-1 ]
+    let candidates turtles with [(in-conv? = false) and (last interactions != who)] in-radius view-distance
+    let target one-of candidates
     ifelse target != NOBODY [
       face target
     ]
@@ -134,6 +134,17 @@ to move
 
   if agent-strategy = "Call once" [
     ;;call-once-strategy
+    let ag-1 self
+    let candidates turtles with [(in-conv? = false) and (not member? who interactions)] in-radius view-distance
+    let target one-of candidates with-min [ distance ag-1 ]
+    ifelse target != NOBODY [
+      face target
+    ]
+    [
+      lt random 90
+      rt random 90
+    ]
+    fd 1
   ]
 
 end
@@ -271,7 +282,7 @@ CHOOSER
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-2
+0
 
 BUTTON
 25
@@ -316,7 +327,7 @@ number-of-agents
 number-of-agents
 2
 100
-50.0
+16.0
 2
 1
 NIL
@@ -331,7 +342,7 @@ view-distance
 view-distance
 1
 25
-10.0
+6.0
 1
 1
 patches
@@ -409,7 +420,7 @@ gossip-distance
 gossip-distance
 1
 10
-2.0
+1.0
 1
 1
 patches
