@@ -1,10 +1,19 @@
+directed-link-breed [initiated-conversations initiated-conversation]
+
 turtles-own [
   secrets
   in-conv?
   conv-timer
   group
   group-leader
-  energy
+  conv-history
+  tot-conv-hist
+  ind
+  token?
+]
+
+globals [
+  numb_conv
 ]
 
 to setup
@@ -18,8 +27,12 @@ to setup
     set secrets (list who)
     set in-conv? false
     set conv-timer 0
-    set energy starting-energy
+    set conv-history -1
+    set tot-conv-hist -1
+    set ind 0
+    set token? true
   ]
+
   ask patches [
     set pcolor grey - 2
   ]
@@ -28,18 +41,50 @@ to setup
   ]
 end
 
+
 to go
-  if (count turtles with [ length secrets = count turtles ]) = count turtles [stop]
+  if (count turtles with [ length secrets = count turtles ]) = count turtles [
+    distinguish-expert
+    create-links
+    stop
+  ]
   ask turtles [
     tick-turtle
   ]
   tick
 end
 
+;;change the color of the turtles that become experts
+to distinguish-expert
+    ask turtles [
+     if length secrets = number-of-agents [
+        set color green
+      ]
+    ]
+end
+
+;; create the links between the turtles that exchanged secrets
+to create-links
+    ;;if number-of-agents < 17 [
+      ;;layout-circle sort turtles number-of-agents
+    ;;]
+    ask turtles [
+      show conv-history
+      export-output "Conv-history.txt"
+
+      foreach tot-conv-hist [
+        if ind mod 2 != 0 [
+          ask turtle item ind tot-conv-hist[
+            create-initiated-conversation-to turtle item (ind + 1) tot-conv-hist
+          ]
+        ]
+        set ind ind + 1
+      ]
+    ]
+end
+
 to tick-turtle
-  if turtles-die and (energy = 0) [die]
   ifelse in-conv? = true [
-    set energy starting-energy
     set conv-timer (conv-timer - 1)
     if conv-timer <= 0 [
       set in-conv? false
@@ -51,13 +96,12 @@ to tick-turtle
     move
     create-conv
   ]
-  set energy (energy - 1)
 end
 
 ;; Let agent turn and move based on strategy
 to move
 
-  if agent-strategy = "Any" [
+  if agent-strategy = "Any" or agent-strategy = "Token" or agent-strategy = "Spider" [
     fd 1
     lt random 90
     rt random 90
@@ -65,7 +109,7 @@ to move
 
   if agent-strategy = "Learn New Secrets" [
     let ag-1 self
-    let candidates turtles with [in-conv? = false]; in-radius view-distance
+    let candidates turtles with [in-conv? = false] in-radius view-distance
     set candidates candidates with [ new-secret ag-1 ]
     let target one-of candidates with-min [ distance ag-1 ]
     ifelse target != NOBODY [
@@ -76,13 +120,6 @@ to move
       rt random 90
     ]
     fd 1
-  ]
-
-  if agent-strategy = "Token" [
-    ;;token-strategy
-  ]
-  if agent-strategy = "Spider" [
-    ;;spider-strategy
   ]
 
   if agent-strategy = "Call once" [
@@ -109,13 +146,14 @@ to create-conv
       exchange-secrets ag-2
       ask self [ set conv-timer gossip-duration ]
       ask ag-2 [ set conv-timer gossip-duration ]
+      set numb_conv numb_conv + 1
     ]
   ]
 end
 
-;; try to find a gossiping partner withing view-distance based on strategy
+;; try to find a gossiping partner within gossip-distance based on strategy
 to find-partner
-  set group turtles with [in-conv? = false] in-radius view-distance
+  set group turtles with [in-conv? = false] in-radius gossip-distance
   let group-size count group
 
   ;; handle strategies
@@ -124,9 +162,17 @@ to find-partner
     set group group with [ new-secret ag-1 ]
   ]
 
+  if agent-strategy = "Token" or agent-strategy = "Spider" [
+    if not [token?] of self [
+      let ag-1 self
+      set group turtles with [ who = [who] of ag-1 ]
+    ]
+  ]
+
   set group up-to-n-of 2 group
 end
 
+;; let agents form groups and if in group return false, if seaeching for a group return true
 to-report form-group
   if count group > 1 [
     let leader self
@@ -136,7 +182,7 @@ to-report form-group
       set group-leader leader
       set group playing-group
       set color red
-      set shape "face happy"
+      set shape "face neutral"
     ]
     report true
   ]
@@ -146,34 +192,34 @@ end
 ;; calling agent exchanges secrets with ag-2
 to exchange-secrets [ag-2]
   let ag-1 self
+
+  if agent-strategy = "Token" [
+    ask ag-1 [ set token? false ]
+    ask ag-2 [ set token? true ]
+  ]
+
+  if agent-strategy = "Spider" [
+    ask ag-2 [ set token? false ]
+  ]
+
   let secrets-union -1
   ask ag-1 [ set secrets-union secrets ]
   ask ag-2 [ set secrets-union sentence secrets-union secrets ]
   set secrets-union remove-duplicates secrets-union
   ask ag-1 [ set secrets secrets-union ]
   ask ag-2 [ set secrets secrets-union ]
+  ask ag-1[
+    set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
+  ]
+    ask ag-2[
+    set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
+  ]
+  set tot-conv-hist (sentence tot-conv-hist ([who] of ag-1) ([who] of ag-2))
 end
 
-to choose-strategy
-      if agent-strategy = "Any" [
-        ;;any-strategy
-      ]
-      if agent-strategy = "Learn New Secrets" [
-        ;;learn-new-secrets-strategy
-      ]
-      if agent-strategy = "Token" [
-        ;;token-strategy
-      ]
-      if agent-strategy = "Spider" [
-        ;;spider-strategy
-      ]
-      if agent-strategy = "Call once" [
-        ;;call-once-strategy
-      ]
-end
 
 to-report perc-experts
-  report (count turtles with [ length secrets >= count turtles ]) / count turtles
+  report (count turtles with [ length secrets = number-of-agents ]) / number-of-agents
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -190,8 +236,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -16
 16
@@ -206,12 +252,12 @@ ticks
 CHOOSER
 24
 94
-176
+196
 139
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once"
-0
+2
 
 BUTTON
 25
@@ -231,10 +277,10 @@ NIL
 1
 
 BUTTON
-110
-44
-173
-77
+132
+43
+195
+76
 NIL
 go
 T
@@ -249,9 +295,9 @@ NIL
 
 SLIDER
 24
-151
+149
 196
-184
+182
 number-of-agents
 number-of-agents
 2
@@ -264,24 +310,24 @@ HORIZONTAL
 
 SLIDER
 25
-192
+190
 197
-225
+223
 view-distance
 view-distance
 1
 25
-1.0
+10.0
 1
 1
-NIL
+patches
 HORIZONTAL
 
 SLIDER
 25
-234
+273
 197
-267
+306
 gossip-duration
 gossip-duration
 1
@@ -293,63 +339,67 @@ ticks
 HORIZONTAL
 
 MONITOR
-24
-273
-96
-318
-% experts
-perc-experts
+25
+315
+198
+360
+Number of experts (in %)
+perc-experts * 100
 5
 1
 11
 
+PLOT
+1002
+202
+1202
+352
+Secrets
+ticks
+lenght of secrets
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -14730904 true "" "plot min [length secrets] of turtles "
+"pen-1" 1.0 0 -5298144 true "" "plot max [length secrets] of turtles "
+
+PLOT
+1001
+41
+1201
+191
+Conversations
+ticks
+number of conversations
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot numb_conv"
+
 SLIDER
 25
-433
+231
 197
-466
-starting-energy
-starting-energy
-0
-100
-93.0
+264
+gossip-distance
+gossip-distance
+1
+10
+2.0
 1
 1
-NIL
+patches
 HORIZONTAL
-
-SWITCH
-26
-392
-138
-425
-turtles-die
-turtles-die
-0
-1
--1000
-
-MONITOR
-24
-325
-107
-370
-NIL
-count turtles
-17
-1
-11
-
-MONITOR
-62
-606
-190
-651
-NIL
-[energy] of turtle 0
-17
-1
-11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -377,7 +427,16 @@ Choose a protocol, adjust the other parameters, set up the environment and press
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+1) #done (Gossip distance, create in independent variable from the view distance)
+2) Spider
+3) Token
+4) Call once
+5) Think of appropiate graphs to show the results
+6) Think of experiments and varibles that need to be manipulated for the results
+7) Polish things (repetitive)
+
+Implement later if time is on our side
+1) Adding different mutiple maps
 
 ## NETLOGO FEATURES
 
