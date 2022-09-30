@@ -147,6 +147,22 @@ to move
     fd 1
   ]
 
+  if agent-strategy = "LNS+CO" [
+    ;;call-once-strategy
+    let ag-1 self
+    let candidates turtles with [(in-conv? = false) and (not member? who interactions)] in-radius view-distance
+    set candidates candidates with [ new-secret ag-1 ]
+    let target one-of candidates with-min [ distance ag-1 ]
+    ifelse target != NOBODY [
+      face target
+    ]
+    [
+      lt random 90
+      rt random 90
+    ]
+    fd 1
+  ]
+
 end
 
 ;; true if calling agent (ag-2) has a secret that is new to ag-1
@@ -261,8 +277,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-0
-0
+1
+1
 1
 -16
 16
@@ -281,8 +297,8 @@ CHOOSER
 139
 agent-strategy
 agent-strategy
-"Any" "Learn New Secrets" "Spider" "Token" "Call once"
-0
+"Any" "Learn New Secrets" "Spider" "Token" "Call once" "LNS+CO"
+1
 
 BUTTON
 25
@@ -327,7 +343,7 @@ number-of-agents
 number-of-agents
 2
 100
-16.0
+48.0
 2
 1
 NIL
@@ -342,7 +358,7 @@ view-distance
 view-distance
 1
 25
-6.0
+25.0
 1
 1
 patches
@@ -420,7 +436,7 @@ gossip-distance
 gossip-distance
 1
 10
-1.0
+2.0
 1
 1
 patches
