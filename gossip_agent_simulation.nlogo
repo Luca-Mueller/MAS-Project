@@ -17,10 +17,12 @@ globals [
   numb_conv
 ]
 
+;; setup the environment and the agents
 to setup
   clear-all
   reset-ticks
 
+  ;; setup the turtles
   create-turtles number-of-agents [
     setxy random-xcor random-ycor
     set shape "person"
@@ -43,7 +45,7 @@ to setup
   ]
 end
 
-
+;; starts the simulation and stops it when all the agents are experts (meaning that all the turtles know all the secrets)
 to go
   if (count turtles with [ length secrets = count turtles ]) = count turtles [
     distinguish-expert
@@ -85,6 +87,7 @@ to create-links
     ]
 end
 
+;; lets agents move and create conversation
 to tick-turtle
   ifelse in-conv? = true [
     set conv-timer (conv-timer - 1)
@@ -100,11 +103,9 @@ to tick-turtle
   ]
 end
 
-;; Let agent turn and move based on strategy
-to move
-
-  if agent-strategy = "Any" or agent-strategy = "Token" or agent-strategy = "Spider" [
-    let ag-1 self
+;;any, token and spider protocols
+to any-token-spider-strategy
+  let ag-1 self
     let candidates turtles with [(in-conv? = false)] in-radius view-distance
     let target one-of candidates
     ifelse target != NOBODY [
@@ -115,10 +116,11 @@ to move
       rt random 90
     ]
     fd 1
-  ]
+end
 
-  if agent-strategy = "Learn New Secrets" [
-    let ag-1 self
+;; learn new secrets protocol
+to lns-strategy
+  let ag-1 self
     let candidates turtles with [in-conv? = false] in-radius view-distance
     set candidates candidates with [ new-secret ag-1 ]
     let target one-of candidates with-min [ distance ag-1 ]
@@ -130,11 +132,11 @@ to move
       rt random 90
     ]
     fd 1
-  ]
+end
 
-  if agent-strategy = "Call once" [
-    ;;call-once-strategy
-    let ag-1 self
+;; call-once protocol
+to call-once-strategy
+  let ag-1 self
     let candidates turtles with [(in-conv? = false) and (not member? who interactions)] in-radius view-distance
     let target one-of candidates with-min [ distance ag-1 ]
     ifelse target != NOBODY [
@@ -145,11 +147,11 @@ to move
       rt random 90
     ]
     fd 1
-  ]
+end
 
-  if agent-strategy = "LNS+CO" [
-    ;;call-once-strategy
-    let ag-1 self
+;; learn new secrets in combination with call once protocol
+to lns-co-strategy
+      let ag-1 self
     let candidates turtles with [(in-conv? = false) and (not member? who interactions)] in-radius view-distance
     set candidates candidates with [ new-secret ag-1 ]
     let target one-of candidates with-min [ distance ag-1 ]
@@ -161,8 +163,25 @@ to move
       rt random 90
     ]
     fd 1
+end
+
+;; Let agent turn and move based on the selected strategy
+to move
+  if agent-strategy = "Any" or agent-strategy = "Token" or agent-strategy = "Spider" [
+    any-token-spider-strategy
   ]
 
+  if agent-strategy = "Learn New Secrets" [
+    lns-strategy
+  ]
+
+  if agent-strategy = "Call once" [
+    call-once-strategy
+  ]
+
+  if agent-strategy = "LNS+CO" [
+    lns-co-strategy
+  ]
 end
 
 ;; true if calling agent (ag-2) has a secret that is new to ag-1
@@ -174,6 +193,7 @@ to-report new-secret [ ag-1 ]
   report false
 end
 
+;; creates the conv betweeb agents
 to create-conv
   if in-conv? = false [
     find-partner
@@ -188,7 +208,7 @@ to create-conv
   ]
 end
 
-;; try to find a gossiping partner within gossip-distance based on strategy
+;; try to find a gossiping partner within gossip-distance based on strategy and form groups of two agents
 to find-partner
   set group turtles with [in-conv? = false] in-radius gossip-distance
   let group-size count group
@@ -258,7 +278,7 @@ to exchange-secrets [ag-2]
   set tot-conv-hist (sentence tot-conv-hist ([who] of ag-1) ([who] of ag-2))
 end
 
-
+;; used in the monitor for showing the percentage of experts in the simulation
 to-report perc-experts
   report (count turtles with [ length secrets = number-of-agents ]) / number-of-agents
 end
@@ -391,29 +411,10 @@ perc-experts * 100
 11
 
 PLOT
-1002
-202
-1202
-352
-Secrets
-ticks
-lenght of secrets
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -14730904 true "" "plot min [length secrets] of turtles "
-"pen-1" 1.0 0 -5298144 true "" "plot max [length secrets] of turtles "
-
-PLOT
-1001
-41
-1201
-191
+897
+20
+1097
+170
 Conversations
 ticks
 number of conversations
@@ -442,6 +443,28 @@ gossip-distance
 patches
 HORIZONTAL
 
+MONITOR
+24
+368
+175
+413
+Number of conversations
+numb_conv
+17
+1
+11
+
+MONITOR
+24
+420
+81
+465
+Ticks
+ticks
+17
+1
+11
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -467,17 +490,6 @@ Choose a protocol, adjust the other parameters, set up the environment and press
 4) Gossip duration
 
 ## EXTENDING THE MODEL
-
-1) #done (Gossip distance, create in independent variable from the view distance)
-2) Spider
-3) Token
-4) Call once
-5) Think of appropiate graphs to show the results
-6) Think of experiments and varibles that need to be manipulated for the results
-7) Polish things (repetitive)
-
-Implement later if time is on our side
-1) Adding different mutiple maps
 
 ## NETLOGO FEATURES
 
