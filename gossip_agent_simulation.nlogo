@@ -49,7 +49,7 @@ end
 to go
   if (count turtles with [ length secrets = count turtles ]) = count turtles [
     distinguish-expert
-    create-links
+    ;;create-links
     stop
   ]
   ask turtles [
