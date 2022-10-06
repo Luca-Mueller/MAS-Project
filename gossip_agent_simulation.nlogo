@@ -400,10 +400,10 @@ ticks
 HORIZONTAL
 
 MONITOR
-25
-315
-198
-360
+896
+181
+1069
+226
 Number of experts (in %)
 perc-experts * 100
 5
@@ -444,10 +444,10 @@ patches
 HORIZONTAL
 
 MONITOR
-24
-368
-175
-413
+896
+233
+1047
+278
 Number of conversations
 numb_conv
 17
@@ -455,10 +455,10 @@ numb_conv
 11
 
 MONITOR
-24
-420
-81
-465
+1058
+234
+1115
+279
 Ticks
 ticks
 17
