@@ -94,7 +94,13 @@ to tick-turtle
     if conv-timer <= 0 [
       set in-conv? false
       set shape "person"
-      set color white
+      (ifelse length secrets = number-of-agents [
+        set color green
+      ]
+      ; elsecommands
+      [
+          set color white
+      ])
     ]
   ]
   [
