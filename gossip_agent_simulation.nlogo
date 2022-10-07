@@ -121,17 +121,17 @@ end
 ;; learn new secrets protocol
 to lns-strategy
   let ag-1 self
-    let candidates turtles with [in-conv? = false] in-radius view-distance
-    set candidates candidates with [ new-secret ag-1 ]
-    let target one-of candidates with-min [ distance ag-1 ]
-    ifelse target != NOBODY [
-      face target
-    ]
-    [
-      lt random 90
-      rt random 90
-    ]
-    fd 1
+  let candidates turtles with [in-conv? = false] in-radius view-distance
+  set candidates candidates with [ new-secret ag-1 ]
+  let target one-of candidates with-min [ distance ag-1 ]
+  ifelse target != NOBODY [
+    face target
+  ]
+  [
+    lt random 90
+    rt random 90
+  ]
+  fd 1
 end
 
 ;; call-once protocol
@@ -186,10 +186,7 @@ end
 
 ;; true if calling agent (ag-2) has a secret that is new to ag-1
 to-report new-secret [ ag-1 ]
-  let ag-2 self
-  let ag-1-secrets -1
-  ask ag-1 [ set ag-1-secrets secrets ]
-  foreach secrets [s -> if (not member? s ag-1-secrets) [ report true ] ]
+  if not member? who ([secrets] of ag-1) [ report true ]
   report false
 end
 
@@ -213,12 +210,7 @@ to find-partner
   set group turtles with [in-conv? = false] in-radius gossip-distance
   let group-size count group
 
-  ;; handle strategies
-  if agent-strategy = "Learn New Secrets" [
-    let ag-1 self
-    set group group with [ new-secret ag-1 ]
-  ]
-
+  ;; handle TOK & SPI strategies
   if agent-strategy = "Token" or agent-strategy = "Spider" [
     if not [token?] of self [
       let ag-1 self
@@ -234,6 +226,13 @@ to-report form-group
   if count group > 1 [
     let leader self
     let playing-group group
+
+    ;; handle LNS strategy
+    if agent-strategy = "Learn New Secrets" [
+      let ag-2 one-of other group with [ new-secret leader ]
+      if ag-2 = NOBODY [ report false ]
+    ]
+
     ask group [
       set in-conv? true
       set group-leader leader
@@ -271,8 +270,8 @@ to exchange-secrets [ag-2]
     set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
   ]
     ask ag-2[
-    set interactions lput ([who] of ag-1)  interactions
-    set interactions remove-duplicates interactions
+    ;set interactions lput ([who] of ag-1)  interactions
+    ;set interactions remove-duplicates interactions
     set conv-history (sentence conv-history ([who] of ag-1) ([who] of ag-2))
   ]
   set tot-conv-hist (sentence tot-conv-hist ([who] of ag-1) ([who] of ag-2))
