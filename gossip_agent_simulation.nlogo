@@ -232,8 +232,14 @@ to-report form-group
   if count group > 1 [
     let leader self
     let playing-group group
+    let leader-interactions interactions
 
-    ;; handle LNS strategy
+    ;; handle CO strategy
+    if agent-strategy = "Call once" [
+      let ag-2 one-of other group with [ not member? who leader-interactions ]
+      if ag-2 = NOBODY [ report false ]
+    ]
+     ;; handle LNS strategy
     if agent-strategy = "Learn New Secrets" [
       let ag-2 one-of other group with [ new-secret leader ]
       if ag-2 = NOBODY [ report false ]
@@ -323,7 +329,7 @@ CHOOSER
 agent-strategy
 agent-strategy
 "Any" "Learn New Secrets" "Spider" "Token" "Call once" "LNS+CO"
-1
+4
 
 BUTTON
 25
@@ -368,7 +374,7 @@ number-of-agents
 number-of-agents
 2
 100
-48.0
+4.0
 2
 1
 NIL
